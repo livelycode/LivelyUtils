@@ -63,3 +63,4 @@ module.exports =
   mapData: (object, mapFun, cb) -> mapData [], object, mapFun, cb
   mapArray: mapArray
   data: (requiredData, dataOrFun) -> new Data requiredData, dataOrFun
+  Data: Data
