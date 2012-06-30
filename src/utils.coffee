@@ -41,7 +41,7 @@ class Data
     [@requiredData, @dataFun] = if dataFun then [requiredData, dataFun]
     else [[], requiredData]
     @requiredData = for data in @requiredData
-      if data.constructor is Data then data else createData data
+      if data.constructor is Data then data else new Data data
   data: (cb) ->
     if @dataCached then return cb null, @dataCached
     dataFun = @dataFun
