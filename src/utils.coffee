@@ -36,7 +36,30 @@ mapObject = (object, mapFun, cb) ->
   tasks = (map key, value for key, value of object)
   async.parallel tasks, () -> cb null, newObj
 
+class Data
+  constructor: (requiredData, dataFun) ->
+    [@requiredData, @dataFun] = if dataFun then [requiredData, dataFun]
+    else [[], requiredData]
+    @requiredData = for data in @requiredData
+      if data.constructor is Data then data else createData data
+  data: (cb) ->
+    if @dataCached then return cb null, @dataCached
+    dataFun = @dataFun
+    that = this
+    finished = (err, result) ->
+      that.dataCached = result
+      cb err, result
+    if typeof dataFun isnt 'function' then finished null, dataFun
+    else if dataFun.length is 0 then finished null, dataFun()
+    else if @requiredData.length is 0 and dataFun.length is 1 then dataFun finished
+    else
+      mapFun = (each, cb) -> each.data cb
+      async.map @requiredData, mapFun, (err, dataRes) ->
+        if dataFun.length is 2 then that.dataFun dataRes, finished
+        else finished null, dataFun dataRes
+
 module.exports =
   mapObject: mapObject
   mapData: (object, mapFun, cb) -> mapData [], object, mapFun, cb
   mapArray: mapArray
+  data: (requiredData, dataOrFun) -> new Data requiredData, dataOrFun
