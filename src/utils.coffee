@@ -36,6 +36,15 @@ mapObject = (object, mapFun, cb) ->
   tasks = (map key, value for key, value of object)
   async.parallel tasks, () -> cb null, newObj
 
+# passes the evaluated result of value to callback (no matter if sync or async)
+ensure = (values..., cb) ->
+  map = (value, cb) ->
+    switch value.length
+      when undefined then cb null, value
+      when 0 then cb null, value()
+      when 1 then value cb
+  async.map values, map, (err, res) -> cb null, res...
+
 class Data
   constructor: (requiredData, dataFun) ->
     [@requiredData, @dataFun] = if dataFun then [requiredData, dataFun]
@@ -66,3 +75,4 @@ module.exports =
   mapArray: mapArray
   data: (requiredData, dataOrFun) -> new Data requiredData, dataOrFun
   Data: Data
+  ensure: ensure

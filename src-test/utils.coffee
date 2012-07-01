@@ -1,10 +1,14 @@
 
 assert = require 'assert'
 utils = require '../lib/utils'
+async = require 'async'
 
 test1 =
   a: 2
   b: 3
+
+test1Fun = () -> test1
+test1CallbackFun = (cb) -> cb null, test1
 
 test2 =
   a: 4
@@ -44,4 +48,13 @@ describe 'utils', () ->
     it 'should async map an array', (done) ->
       utils.mapArray array1, ((value, index, cb) -> cb null, value+index), (err, res) ->
         assert.equal each, array2[index] for each, index in res
+        done()
+  describe 'ensure', () ->
+    it 'tests all three variants', (done) ->
+      async.map [test1, test1Fun, test1CallbackFun], utils.ensure, (err, res) ->
+        assert.equal each, test1 for each in res
+        done()
+    it 'tests multiple params', (done) ->
+      utils.ensure test1, test1Fun, test1CallbackFun, (err, res...) ->
+        assert.equal each, test1 for each in res
         done()
