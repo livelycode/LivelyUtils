@@ -37,6 +37,9 @@ describe 'utils', () ->
       utils.mapObject test1, ((key, value, cb) -> cb null, value*value), (err, res) ->
         assert.equal res.a, test2.a
         done()
+  describe 'sync.mapObject', () ->
+    res = utils.sync.mapObject test1, (key, value) -> value*value
+    assert.equal res.a, test2.a
   describe 'mapData', () ->
     it 'should async map any data', (done) ->
       mapFun = (path, value, cb) -> if typeof value is 'number' then cb null, value+1 else cb()

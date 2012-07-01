@@ -36,6 +36,11 @@ mapObject = (object, mapFun, cb) ->
   tasks = (map key, value for key, value of object)
   async.parallel tasks, () -> cb null, newObj
 
+sync = {}
+sync.mapObject = (object, mapFun) ->
+  newObj = {}
+  (newObj[key] = mapFun key, value) for key, value of object
+  newObj
 # passes the evaluated result of value to callback (no matter if sync or async)
 ensure = (values..., cb) ->
   map = (value, cb) ->
@@ -51,3 +56,4 @@ module.exports =
   mapData: (object, mapFun, cb) -> mapData [], object, mapFun, cb
   mapArray: mapArray
   ensure: ensure
+  sync: sync

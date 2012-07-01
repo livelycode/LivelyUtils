@@ -60,6 +60,13 @@
         });
       });
     });
+    describe('sync.mapObject', function() {
+      var res;
+      res = utils.sync.mapObject(test1, function(key, value) {
+        return value * value;
+      });
+      return assert.equal(res.a, test2.a);
+    });
     describe('mapData', function() {
       return it('should async map any data', function(done) {
         var mapFun;
