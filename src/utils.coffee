@@ -47,8 +47,10 @@ class Data
     dataFun = @dataFun
     that = this
     finished = (err, result) ->
-      that.dataCached = result
-      cb err, result
+      if result.constructor is Data then result.data finished
+      else
+        that.dataCached = result
+        cb err, result
     if typeof dataFun isnt 'function' then finished null, dataFun
     else if dataFun.length is 0 then finished null, dataFun()
     else if @requiredData.length is 0 and dataFun.length is 1 then dataFun finished
