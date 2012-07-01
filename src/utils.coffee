@@ -39,40 +39,15 @@ mapObject = (object, mapFun, cb) ->
 # passes the evaluated result of value to callback (no matter if sync or async)
 ensure = (values..., cb) ->
   map = (value, cb) ->
-    switch value.length
-      when undefined then cb null, value
-      when 0 then cb null, value()
-      when 1 then value cb
+    if typeof value is 'function'
+      switch value.length
+        when 0 then cb null, value()
+        when 1 then value cb
+    else cb null, value
   async.map values, map, (err, res) -> cb null, res...
-
-class Data
-  constructor: (requiredData, dataFun) ->
-    [@requiredData, @dataFun] = if dataFun then [requiredData, dataFun]
-    else [[], requiredData]
-    @requiredData = for data in @requiredData
-      if data.constructor is Data then data else new Data data
-  value: (cb) ->
-    if @dataCached then return cb null, @dataCached
-    dataFun = @dataFun
-    that = this
-    finished = (err, result) ->
-      if result.constructor is Data then result.value finished
-      else
-        that.dataCached = result
-        cb err, result
-    if typeof dataFun isnt 'function' then finished null, dataFun
-    else if dataFun.length is 0 then finished null, dataFun()
-    else if @requiredData.length is 0 and dataFun.length is 1 then dataFun finished
-    else
-      mapFun = (each, cb) -> each.value cb
-      async.map @requiredData, mapFun, (err, dataRes) ->
-        if dataFun.length is 2 then that.dataFun dataRes, finished
-        else finished null, dataFun dataRes
 
 module.exports =
   mapObject: mapObject
   mapData: (object, mapFun, cb) -> mapData [], object, mapFun, cb
   mapArray: mapArray
-  data: (requiredData, dataOrFun) -> new Data requiredData, dataOrFun
-  Data: Data
   ensure: ensure
