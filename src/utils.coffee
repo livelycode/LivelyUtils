@@ -42,12 +42,12 @@ class Data
     else [[], requiredData]
     @requiredData = for data in @requiredData
       if data.constructor is Data then data else new Data data
-  data: (cb) ->
+  value: (cb) ->
     if @dataCached then return cb null, @dataCached
     dataFun = @dataFun
     that = this
     finished = (err, result) ->
-      if result.constructor is Data then result.data finished
+      if result.constructor is Data then result.value finished
       else
         that.dataCached = result
         cb err, result
@@ -55,7 +55,7 @@ class Data
     else if dataFun.length is 0 then finished null, dataFun()
     else if @requiredData.length is 0 and dataFun.length is 1 then dataFun finished
     else
-      mapFun = (each, cb) -> each.data cb
+      mapFun = (each, cb) -> each.value cb
       async.map @requiredData, mapFun, (err, dataRes) ->
         if dataFun.length is 2 then that.dataFun dataRes, finished
         else finished null, dataFun dataRes
