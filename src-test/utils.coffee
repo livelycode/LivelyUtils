@@ -61,3 +61,8 @@ describe 'utils', () ->
       utils.ensure test1, test1Fun, test1CallbackFun, (err, res...) ->
         assert.equal each, test1 for each in res
         done()
+  describe 'merge', () ->
+    it 'merges objects', () ->
+      merged = utils.merge test1, data2
+      assert.equal merged.a, test1.a
+      assert.equal merged.c, data2.c

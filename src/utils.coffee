@@ -51,9 +51,17 @@ ensure = (values..., cb) ->
     else cb null, value
   async.map values, map, (err, res) -> cb null, res...
 
+merge = (objects...) ->
+  newObj = {}
+  for each in objects
+    for key, value of each
+      if not newObj[key] then newObj[key] = value
+  newObj
+
 module.exports =
   mapObject: mapObject
   mapData: (object, mapFun, cb) -> mapData [], object, mapFun, cb
   mapArray: mapArray
   ensure: ensure
   sync: sync
+  merge: merge

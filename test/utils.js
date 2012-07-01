@@ -97,7 +97,7 @@
         });
       });
     });
-    return describe('ensure', function() {
+    describe('ensure', function() {
       it('tests all three variants', function(done) {
         return async.map([test1, test1Fun, test1CallbackFun], utils.ensure, function(err, res) {
           var each, _i, _len;
@@ -118,6 +118,14 @@
           }
           return done();
         });
+      });
+    });
+    return describe('merge', function() {
+      return it('merges objects', function() {
+        var merged;
+        merged = utils.merge(test1, data2);
+        assert.equal(merged.a, test1.a);
+        return assert.equal(merged.c, data2.c);
       });
     });
   });
